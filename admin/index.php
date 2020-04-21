@@ -1,21 +1,28 @@
 <?php
     require_once '../load.php';
-    confirm_logged_in();
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Dashboard</title>
-</head>
-<body>
-    <h2>Welcome! <?php echo $_SESSION['user_name'];?></h2>
+
+    if (isset($_GET['media'])) {
+        $tbl = "tbl_" . trim($_GET["media"]);
+    }
+
+if (isset($_GET['filter'])) {
+    //Filter
+        // 'tbl' => 'tbl_movies',
+    $args = array(
+        'tbl'=> $tbl,
+        'tbl2'=>'tbl_genre',
+        'tbl3'=>'tbl_mov_genre',
+        'col'=>'movies_id',
+        'col2'=>'genre_id',
+        'col3'=>'genre_name',
+        'filter'=>$_GET['filter'],
+    );
+
+    $results = getMoviesByFilter($args);
+    echo json_encode($results->fetchAll(PDO::FETCH_ASSOC));
+
+} else {
     
-    <a href="admin_createuser.php">Create User</a>
-    <a href="admin_edituser.php">Edit User</a>
-    <a href="admin_deleteuser.php">Delete User</a>
-    <a href="admin_logout.php">Sign Out</a>
-</body>
-</html>
+    $results = getAll($tbl);
+    echo json_encode($results);
+}
